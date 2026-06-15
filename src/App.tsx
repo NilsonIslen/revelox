@@ -94,7 +94,7 @@ function App() {
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">CN</span>
-          <span>ChismoNano</span>
+          <span>Revelox</span>
         </div>
         <span className={isLoggedIn ? 'session-pill verified' : 'session-pill'}>
           <Lock size={16} aria-hidden="true" />

@@ -1,7 +1,7 @@
-# ChismoNano
+# Revelox
 
 Plataforma de perfiles con respuestas desbloqueables mediante Nano (XNO). El
-MVP actual valida el cuestionario publico fijo de ChismoNano y el login por
+MVP actual valida el cuestionario publico fijo de Revelox y el login por
 wallet Nano.
 
 ## Stack inicial
