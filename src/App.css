@@ -505,6 +505,57 @@ h2 {
   line-height: 1.25;
 }
 
+.question-text {
+  display: grid;
+  gap: 10px;
+}
+
+.question-title-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.question-number {
+  display: inline-grid;
+  min-width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 999px;
+  color: #7b2438;
+  font-size: 0.86rem;
+  font-weight: 950;
+  background: #ffe8ee;
+}
+
+.question-details,
+.question-examples ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 22px;
+  color: #5f6f73;
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.question-examples {
+  display: grid;
+  gap: 7px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fff9fa;
+}
+
+.question-examples span {
+  color: #7b2438;
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
 .field-label {
   display: grid;
   gap: 8px;
@@ -776,9 +827,8 @@ h2 {
   background: #ffe8ee;
 }
 
-.reveal-card h2 {
-  margin: 0;
-  font-size: clamp(1.4rem, 3vw, 2rem);
+.reveal-card .fixed-question {
+  font-size: clamp(1.28rem, 2.6vw, 1.75rem);
 }
 
 .hidden-answer {

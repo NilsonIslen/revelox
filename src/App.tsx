@@ -34,9 +34,10 @@ type QuestionValue = string | string[]
 type QuestionField = {
   key: string
   label: string
-  type?: 'text' | 'textarea' | 'date' | 'tel' | 'checkbox-group'
+  type?: 'text' | 'textarea' | 'date' | 'tel' | 'url' | 'checkbox-group'
   placeholder?: string
   options?: string[]
+  optional?: boolean
 }
 
 type QuestionDefinition = {
@@ -69,6 +70,12 @@ type PrivateProfile = Omit<PublicProfile, 'answers'> & {
 type RequestState = {
   loading: boolean
   error: string
+}
+
+type QuestionTextContent = {
+  title: string
+  details: string[]
+  examples: string[]
 }
 
 type PaymentIntent = {
@@ -187,6 +194,15 @@ const parseQuestionValues = (question: Question, answer: string) => {
 const isQuestionComplete = (question: Question) =>
   question.fields?.length
     ? question.fields.every((field) => {
+        if (field.optional) return true
+        const value = question.values[field.key]
+        return Array.isArray(value) ? value.length > 0 : Boolean(value?.trim())
+      })
+    : Boolean(question.answer.trim())
+
+const hasQuestionContent = (question: Question) =>
+  question.fields?.length
+    ? question.fields.some((field) => {
         const value = question.values[field.key]
         return Array.isArray(value) ? value.length > 0 : Boolean(value?.trim())
       })
@@ -236,6 +252,62 @@ const apiRequest = async <T,>(
   }
 
   return data
+}
+
+const formatQuestionText = (text: string): QuestionTextContent => {
+  const [beforeExamples, examplesText = ''] = text.split(' Ejemplos: ')
+  const details = beforeExamples
+    .split(/(?<=\.)\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+  const title = details.shift() ?? beforeExamples.trim()
+  const examples = examplesText
+    .replace(/Puedes eliminar, añadir o modificar (cualquier )?elemento\.?/i, '')
+    .split(',')
+    .map((item) => item.trim().replace(/\.$/, ''))
+    .filter(Boolean)
+
+  return { title, details, examples }
+}
+
+function QuestionText({
+  index,
+  text,
+  titleAs: Title = 'h3',
+}: {
+  index: number
+  text: string
+  titleAs?: 'h2' | 'h3'
+}) {
+  const content = formatQuestionText(text)
+
+  return (
+    <div className="question-text">
+      <div className="question-title-row">
+        <span className="question-number">{index + 1}</span>
+        <Title className="fixed-question">{content.title}</Title>
+      </div>
+
+      {content.details.length > 0 && (
+        <ul className="question-details">
+          {content.details.map((detail) => (
+            <li key={detail}>{detail}</li>
+          ))}
+        </ul>
+      )}
+
+      {content.examples.length > 0 && (
+        <div className="question-examples">
+          <span>Ejemplos</span>
+          <ul>
+            {content.examples.map((example) => (
+              <li key={example}>{example}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function Brand() {
@@ -479,7 +551,7 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
             <p>Este perfil todavía no tiene respuestas publicadas.</p>
           </div>
         )}
-        {profile.answers.map((item) => {
+        {profile.answers.map((item, index) => {
           const unlockedAnswer = unlockedAnswers[item.id]
           const isPending = pendingAnswerId === item.id
 
@@ -488,7 +560,7 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
               <div className="reveal-card-heading">
                 <span className="price-badge">{item.price} XNO</span>
               </div>
-              <h2>{item.prompt}</h2>
+              <QuestionText index={index} text={item.prompt} titleAs="h2" />
 
               <div className={unlockedAnswer ? 'hidden-answer revealed' : 'hidden-answer'}>
                 {unlockedAnswer ? <Eye size={22} /> : <EyeOff size={22} />}
@@ -974,7 +1046,7 @@ function CreatorPage() {
           </div>
 
           <div className="form-stack">
-            {questions.map((question) => (
+            {questions.map((question, index) => (
               <article className="question-card" key={question.id}>
                 {!isLoggedIn && (
                   <span className="locked-badge">
@@ -983,7 +1055,7 @@ function CreatorPage() {
                   </span>
                 )}
 
-                <h3 className="fixed-question">{question.prompt}</h3>
+                <QuestionText index={index} text={question.prompt} />
 
                 {question.fields?.length ? (
                   <div className="structured-fields">
@@ -1057,6 +1129,8 @@ function CreatorPage() {
                             type={
                               field.type === 'date'
                                 ? 'date'
+                                : field.type === 'url'
+                                  ? 'url'
                                 : field.type === 'tel'
                                   ? 'tel'
                                   : 'text'
@@ -1070,7 +1144,7 @@ function CreatorPage() {
                               )
                             }
                             placeholder={isLoggedIn ? field.placeholder : 'Bloqueado'}
-                            required
+                            required={!field.optional}
                             disabled={!isLoggedIn}
                           />
                         </label>
@@ -1117,6 +1191,7 @@ function CreatorPage() {
                       disabled={
                         publishState.loading ||
                         !isQuestionComplete(question) ||
+                        !hasQuestionContent(question) ||
                         !(Number.parseFloat(question.price) > 0)
                       }
                       onClick={() => saveAnswer(question.id)}

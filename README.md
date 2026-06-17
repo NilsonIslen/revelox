@@ -31,18 +31,20 @@ npm run lint
 - El backend valida remitente, receptor e importe antes de revelar una respuesta.
 - Cada hash de pago solo puede utilizarse una vez.
 
-## Cuestionario
+## Cuestionario V1
 
-El cuestionario actual funciona como plantilla base mientras se define una
-version definitiva. Es plano, no secuencial, y cada pregunta funciona como un
-formulario independiente con campos obligatorios y precio propio en XNO.
+El cuestionario actual es plano, no secuencial, y cada pregunta funciona como
+un formulario independiente con precio propio en XNO. El usuario elige que
+preguntas contestar; al guardar una pregunta, debe completar los campos de ese
+formulario.
 
-Preguntas actuales:
+La version V1 incluye 100 formularios: identificacion, galeria personal y
+preguntas de revelacion basadas en listas ordenadas, condiciones reales,
+motivaciones, limites y contradicciones personales.
 
-- Nombre completo.
-- Fecha de nacimiento.
-- Numero de contacto.
-- Ciudad y barrio de residencia.
+La galeria personal se maneja temporalmente como un enlace a un album externo de
+fotografias. El almacenamiento real de imagenes queda pendiente para una fase
+posterior.
 
 Revelox añade una fraccion unica al importe de cada solicitud durante 15 minutos.
 Esto permite identificar automaticamente la wallet que pago sin pedir su

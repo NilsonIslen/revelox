@@ -98,7 +98,7 @@ const getPublicProfile = (profile) => ({
     const question = getQuestion(id)
 
     return question
-      ? [{ id, prompt: question.prompt, price }]
+      ? [{ id, prompt: question.publicPrompt ?? question.prompt, price }]
       : []
   }),
 })
@@ -138,10 +138,14 @@ const normalizeQuestionAnswer = (question, body) => {
 
   if (
     normalizedFields.some((field) =>
-      Array.isArray(field.value) ? field.value.length === 0 : !field.value,
+      field.optional
+        ? false
+        : Array.isArray(field.value)
+          ? field.value.length === 0
+          : !field.value,
     )
   ) {
-    throw new Error('Todos los campos de esta pregunta son obligatorios')
+    throw new Error('Completa todos los campos de esta pregunta para guardarla')
   }
 
   return normalizedFields
