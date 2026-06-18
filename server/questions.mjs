@@ -149,25 +149,33 @@ export const questions = [
   ),
   createQuestion(
     6,
-    'Haz una lista de las personas que actualmente ocupan espacio en tu mente. Ordénalas desde la que más espacio ocupa hasta la que menos. Opcionalmente explica por qué cada una ocupa ese lugar.',
+    'Haz una lista de las personas que actualmente ocupan espacio en tu mente. Ordénalas desde la que más espacio ocupa hasta la que menos. Ejemplos: pareja, expareja, persona que te atrae, familiar, amigo, enemigo, jefe, compañero de trabajo, vecino, cliente, profesor, estudiante, creador de contenido, figura pública, persona fallecida, alguien que extrañas, alguien que te preocupa, alguien que admiras. Puedes utilizar nombres, apodos o descripciones. Opcionalmente explica por qué cada persona ocupa esa posición.',
+    [answerField],
+    'Lista del anfitrión de las personas que actualmente ocupan espacio en su mente, ordenadas desde la que más espacio ocupa hasta la que menos',
   ),
   createQuestion(
     7,
-    'Haz una lista de las sustancias o comportamientos que utilizas para relajarte, desconectarte, aliviar ansiedad o sentir placer. Ordénalos desde el que más utilizas hasta el que menos.',
+    'Haz una lista de las sustancias, actividades o comportamientos que utilizas para relajarte, desconectarte, aliviar ansiedad, distraerte, escapar de problemas o sentir placer. Ordénalos desde el que más utilizas hasta el que menos utilizas. Ejemplos: alcohol, cigarrillo, vapeador, cannabis, otras drogas recreativas, café, bebidas energéticas, comida, dulces, pornografía, masturbación, sexo, redes sociales, videos cortos, YouTube, series, películas, videojuegos, apuestas, compras, ejercicio, trabajo, estudio, música, lectura, dormir, viajar, conducir, hablar con amigos, hablar con tu pareja, meditación, oración, actividades espirituales, actividades creativas. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente indica qué función cumple cada uno en tu vida: placer, distracción, compañía, alivio emocional, reducción de ansiedad, entretenimiento, costumbre u otra.',
+    [answerField],
+    'Lista del anfitrión de las sustancias, actividades o comportamientos que utiliza para relajarse, desconectarse, aliviar ansiedad, distraerse, escapar de problemas o sentir placer, ordenados desde el que más utiliza hasta el que menos utiliza',
   ),
   createQuestion(
     8,
-    'Haz una lista de los aspectos de tu vida sexual que más te gustaría cambiar actualmente. Ordénalos desde el más importante hasta el menos importante. Puedes incluir aspectos relacionados con: frecuencia sexual, deseo sexual, atracción hacia tu pareja, satisfacción sexual, comunicación sobre sexo, iniciativa propia, iniciativa de tu pareja, confianza, intimidad emocional, variedad, fantasías no realizadas, compatibilidad sexual, inseguridades físicas, inseguridades emocionales, tiempo disponible, privacidad, espontaneidad, calidad de los encuentros, capacidad para expresar deseos, capacidad para expresar límites, experiencias que te gustaría vivir, experiencias que te gustaría repetir, experiencias que te gustaría evitar. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué cada aspecto ocupa esa posición.',
+    'Haz una lista de los aspectos de tu vida sexual que más te gustaría cambiar actualmente. Ordénalos desde el más importante hasta el menos importante. Ejemplos: frecuencia sexual, deseo sexual, falta de deseo sexual, atracción hacia tu pareja, atracción hacia otras personas, calidad de los encuentros, duración de los encuentros, comunicación sobre sexo, confianza para expresar deseos, confianza para expresar límites, fantasías no realizadas, monotonía, iniciativa propia, iniciativa de la otra persona, inseguridades físicas, inseguridades emocionales, privacidad, tiempo disponible, intimidad emocional, espontaneidad, variedad, compatibilidad sexual, experiencias que te gustaría probar, experiencias que te gustaría repetir, experiencias que prefieres evitar, dificultad para alcanzar satisfacción, dificultad para conectar emocionalmente. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué cada aspecto ocupa esa posición.',
     [answerField],
     'Lista del anfitrión de los aspectos de su vida sexual que más le gustaría cambiar actualmente, ordenados desde el más importante hasta el menos importante',
   ),
   createQuestion(
     9,
-    'Haz una lista de las características físicas que más te atraen en una pareja. Ordénalas desde la más importante hasta la menos importante.',
+    'Haz una lista de las características físicas que más te atraen en una pareja. Ordénalas desde la más importante hasta la menos importante. Ejemplos: rostro, ojos, sonrisa, labios, cabello, voz, aroma, piel, manos, estatura, peso, contextura física, condición física, musculatura, curvas, glúteos, piernas, pecho, cuello, espalda, forma de caminar, forma de vestir, higiene personal, apariencia natural, apariencia cuidada, energía física, expresiones faciales, mirada, juventud, madurez física. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué los primeros lugares son importantes para ti.',
+    [answerField],
+    'Lista del anfitrión de las características físicas que más le atraen en una pareja, ordenadas desde la más importante hasta la menos importante',
   ),
   createQuestion(
     10,
-    'Haz una lista de las preocupaciones que más ocupan tu mente actualmente. Ordénalas desde la más importante hasta la menos importante.',
+    'Haz una lista de las preocupaciones que más ocupan tu mente actualmente. Ordénalas desde la más importante hasta la menos importante. Ejemplos: salud propia, salud de familiares, salud de tu pareja, dinero, deudas, ingresos futuros, pérdida de empleo, negocio propio, vivienda, seguridad personal, seguridad de familiares, pareja, hijos, padres, conflictos familiares, soledad, vejez, muerte, estudios, carrera profesional, reputación, imagen pública, problemas legales, adicciones, dependencia económica, futuro del país, situación política, situación económica, guerras, tecnología, inteligencia artificial, cambio climático, falta de propósito, pérdida de libertad, pérdida de seres queridos, no cumplir objetivos personales. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué cada preocupación ocupa esa posición.',
+    [answerField],
+    'Lista del anfitrión de las preocupaciones que más ocupan su mente actualmente, ordenadas desde la más importante hasta la menos importante',
   ),
   createQuestion(
     11,
@@ -183,7 +191,9 @@ export const questions = [
   ),
   createQuestion(
     14,
-    '¿Qué imagen tiene tu familia de ti que consideras incorrecta o incompleta?',
+    'Haz una lista de las cosas que tu familia cree sobre ti y que consideras incorrectas, incompletas o desactualizadas. Ordénalas desde la que genera mayor diferencia entre cómo te ven y cómo eres realmente hasta la que genera menor diferencia. Ejemplos: personalidad, creencias religiosas, creencias políticas, orientación sexual, relaciones sentimentales, deseos sexuales, situación económica, hábitos, consumo de sustancias, amistades, objetivos de vida, nivel de felicidad, nivel de éxito, salud mental, salud física, trabajo, estudios, valores personales, forma de pensar, intereses personales, prioridades actuales. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué existe esa diferencia.',
+    [answerField],
+    'Lista del anfitrión de las cosas que su familia cree sobre el anfitrión y que considera incorrectas, incompletas o desactualizadas, ordenadas desde la que genera mayor diferencia entre cómo le ven y cómo es realmente hasta la que genera menor diferencia',
   ),
   createQuestion(
     15,
@@ -199,7 +209,12 @@ export const questions = [
     17,
     'Haz una lista de las personas cuya aprobación todavía buscas. Ordénalas desde la más importante hasta la menos importante.',
   ),
-  createQuestion(18, '¿Cuál es la mentira más importante que sigues manteniendo actualmente?'),
+  createQuestion(
+    18,
+    'Haz una lista de las cosas sobre tu vida actual que menos te gustaría que otras personas descubrieran. Ordénalas desde la que más te preocuparía revelar hasta la que menos. Puedes incluir aspectos relacionados con: relaciones sentimentales, relaciones sexuales, conversaciones privadas, situación económica, hábitos, adicciones, opiniones personales, actividades realizadas, secretos familiares, conflictos personales, fantasías, sentimientos hacia otras personas, comportamientos pasados que siguen afectándote, información profesional, información académica, aspectos de tu personalidad. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica por qué cada aspecto ocupa esa posición.',
+    [answerField],
+    'Lista del anfitrión de las cosas sobre su vida actual que menos le gustaría que otras personas descubrieran, ordenadas desde la que más le preocuparía revelar hasta la que menos',
+  ),
   createQuestion(
     19,
     'Haz una lista de las personas que más envidia te generan actualmente. Ordénalas desde la que más te afecta hasta la que menos.',
@@ -218,7 +233,9 @@ export const questions = [
   ),
   createQuestion(
     23,
-    '¿Qué conversaciones, mensajes o relaciones te preocuparía que otras personas vieran?',
+    'Haz una lista de las personas que menos te gustaría que accedieran a toda la información de tu perfil Revelox. Ordénalas desde la que más te preocuparía hasta la que menos. Puedes incluir: pareja, expareja, madre, padre, hijos, hermanos, familiares, amigos, compañeros de trabajo, jefes, empleados, clientes, vecinos, profesores, alumnos, seguidores, cualquier otra persona. Puedes eliminar, añadir o modificar cualquier elemento. Opcionalmente explica qué aspectos de tu perfil te preocuparía que conociera cada persona.',
+    [answerField],
+    'Lista del anfitrión de las personas que menos le gustaría que accedieran a toda la información de su perfil Revelox, ordenadas desde la que más le preocuparía hasta la que menos',
   ),
   createQuestion(
     24,

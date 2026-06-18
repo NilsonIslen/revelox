@@ -535,9 +535,9 @@ h2 {
   gap: 6px;
   margin: 0;
   padding-left: 22px;
-  color: #5f6f73;
-  font-size: 0.94rem;
-  font-weight: 700;
+  color: var(--heading);
+  font-size: clamp(1.05rem, 1.7vw, 1.22rem);
+  font-weight: 800;
   line-height: 1.5;
 }
 
@@ -551,7 +551,7 @@ h2 {
 
 .question-examples span {
   color: #7b2438;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-weight: 950;
   text-transform: uppercase;
 }
