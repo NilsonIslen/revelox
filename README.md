@@ -38,9 +38,12 @@ un formulario independiente con precio propio en XNO. El usuario elige que
 preguntas contestar; al guardar una pregunta, debe completar los campos de ese
 formulario.
 
-La version V1 incluye 100 formularios: identificacion, galeria personal y
-preguntas de revelacion basadas en listas ordenadas, condiciones reales,
-motivaciones, limites y contradicciones personales.
+La version actual genera 50 tarjetas de personas a partir de 50 palabras.
+Cada respuesta es una lista de asociaciones ordenada de mayor a menor.
+
+Las instrucciones se muestran una sola vez antes del formulario. Cada tarjeta
+muestra solamente una palabra, como `Deseo`, y solicita tres personas mediante
+campos obligatorios ordenados del primer al tercer lugar.
 
 La galeria personal se maneja temporalmente como un enlace a un album externo de
 fotografias. El almacenamiento real de imagenes queda pendiente para una fase

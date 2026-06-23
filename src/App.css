@@ -208,6 +208,24 @@ h2 {
   box-shadow: 0 24px 70px rgba(42, 54, 58, 0.1);
 }
 
+.question-title-category,
+.question-title-word {
+  display: inline;
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-weight: 900;
+}
+
+.question-title-category {
+  color: #7b2438;
+  background: #ffe4eb;
+}
+
+.question-title-word {
+  color: #205b61;
+  background: #dff5f3;
+}
+
 .login-card {
   display: grid;
   gap: 14px;
@@ -409,6 +427,32 @@ h2 {
   font-size: 0.9rem;
   font-weight: 700;
   line-height: 1.45;
+}
+
+.questionnaire-instructions {
+  padding: clamp(18px, 2.5vw, 24px);
+  border: 2px solid rgba(216, 67, 100, 0.3);
+  border-left: 6px solid #ff5f7e;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff0f4, #fff9fa);
+  box-shadow: 0 16px 36px rgba(216, 67, 100, 0.12);
+}
+
+.questionnaire-instructions strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #7b2438;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.questionnaire-instructions p {
+  max-width: 760px;
+  margin: 0;
+  color: #542f38;
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.6;
 }
 
 .question-card {

@@ -34,6 +34,7 @@ type QuestionValue = string | string[]
 type QuestionField = {
   key: string
   label: string
+  displayLabel?: string
   type?: 'text' | 'textarea' | 'date' | 'tel' | 'url' | 'checkbox-group'
   placeholder?: string
   options?: string[]
@@ -52,6 +53,7 @@ type PublicProfile = {
   createdAt: string
   answers: Array<{
     id: number
+    questionKey: string
     prompt: string
     price: string
   }>
@@ -61,6 +63,7 @@ type PrivateProfile = Omit<PublicProfile, 'answers'> & {
   ownerAddress: string
   answers: Array<{
     id: number
+    questionKey: string
     prompt: string
     answer: string
     price: string
@@ -106,10 +109,16 @@ const getUnlockIntentStorageKey = (profileId: string, answerId: number) =>
 const getUnlockedAnswersStorageKey = (profileId: string) =>
   `revelox-unlocked-answers:${profileId}`
 
+const getAnswerAccessKey = (answer: {
+  id: number
+  questionKey?: string
+  prompt?: string
+}) => `${answer.id}:${answer.questionKey ?? answer.prompt ?? ''}`
+
 const getStoredUnlockedAnswers = (profileId: string) => {
   try {
     const value = localStorage.getItem(getUnlockedAnswersStorageKey(profileId))
-    return value ? (JSON.parse(value) as Record<number, string>) : {}
+    return value ? (JSON.parse(value) as Record<string, string>) : {}
   } catch {
     return {}
   }
@@ -146,7 +155,7 @@ const getStoredUnlockIntent = (profileId: string) => {
 const initialQuestions: Question[] = [
   {
     id: 1,
-    prompt: 'Nombre completo',
+    prompt: 'Deseo',
     answer: '',
     values: {},
     price: '',
@@ -171,6 +180,22 @@ const mergeQuestions = (
 
 const parseQuestionValues = (question: Question, answer: string) => {
   if (!question.fields?.length) return {}
+
+  if (question.fields.length === 1) {
+    const [field] = question.fields
+    const prefix = `${field.label}:`
+    const normalizedAnswer = answer.trim()
+    const value = normalizedAnswer.startsWith(prefix)
+      ? normalizedAnswer.slice(prefix.length).trimStart()
+      : normalizedAnswer
+
+    return {
+      [field.key]:
+        field.type === 'checkbox-group' && value
+          ? value.split(',').map((item) => item.trim()).filter(Boolean)
+          : value,
+    }
+  }
 
   return Object.fromEntries(
     question.fields.map((field) => {
@@ -280,12 +305,55 @@ function QuestionText({
   titleAs?: 'h2' | 'h3'
 }) {
   const content = formatQuestionText(text)
+  const ownerCatalyst = content.title.match(/^(.+?) (que activan tu) (.+)$/i)
+  const publicCatalyst = content.title.match(
+    /^(.+?) (que activan (?:el|la)) (.+?) (del titular)$/i,
+  )
+  const catalyst = ownerCatalyst ?? publicCatalyst
+  const publicHiddenTitle = content.title.match(
+    /^(Personas) (asociadas con) (.+?) (en el titular)$/i,
+  )
+  const compactAssociation = content.title.match(/^(Personas) (.+)$/i)
+  const singleWordTitle = content.title.match(/^\S+$/u)
 
   return (
     <div className="question-text">
       <div className="question-title-row">
         <span className="question-number">{index + 1}</span>
-        <Title className="fixed-question">{content.title}</Title>
+        <Title className="fixed-question">
+          {singleWordTitle ? (
+            <span className="question-title-word">{content.title}</span>
+          ) : publicHiddenTitle ? (
+            <>
+              <span className="question-title-category">
+                {publicHiddenTitle[1]}
+              </span>{' '}
+              {publicHiddenTitle[2]}{' '}
+              <span className="question-title-word">
+                {publicHiddenTitle[3]}
+              </span>{' '}
+              {publicHiddenTitle[4]}
+            </>
+          ) : compactAssociation ? (
+            <>
+              <span className="question-title-category">
+                {compactAssociation[1]}
+              </span>{' '}
+              <span className="question-title-word">
+                {compactAssociation[2]}
+              </span>
+            </>
+          ) : catalyst ? (
+            <>
+              <span className="question-title-category">{catalyst[1]}</span>{' '}
+              {catalyst[2]}{' '}
+              <span className="question-title-word">{catalyst[3]}</span>
+              {catalyst[4] ? ` ${catalyst[4]}` : ''}
+            </>
+          ) : (
+            content.title
+          )}
+        </Title>
       </div>
 
       {content.details.length > 0 && (
@@ -340,7 +408,7 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
   const [paymentIntent, setPaymentIntent] = useState<PaymentIntent | null>(
     storedUnlockIntent?.intent ?? null,
   )
-  const [unlockedAnswers, setUnlockedAnswers] = useState<Record<number, string>>(
+  const [unlockedAnswers, setUnlockedAnswers] = useState<Record<string, string>>(
     () => getStoredUnlockedAnswers(profileId),
   )
   const [copiedAnswerId, setCopiedAnswerId] = useState<number | null>(null)
@@ -356,6 +424,23 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
         .then((nextProfile) => {
           if (!active) return
           setProfile(nextProfile)
+          setUnlockedAnswers((current) => {
+            const validKeys = new Set(
+              nextProfile.answers.map((answer) => getAnswerAccessKey(answer)),
+            )
+            const next = Object.fromEntries(
+              Object.entries(current).filter(([key]) => validKeys.has(key)),
+            )
+
+            if (Object.keys(next).length !== Object.keys(current).length) {
+              localStorage.setItem(
+                getUnlockedAnswersStorageKey(profileId),
+                JSON.stringify(next),
+              )
+            }
+
+            return next
+          })
           setLoadError('')
         })
         .catch((error: unknown) => {
@@ -423,7 +508,11 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
         if (!active) return
 
         setUnlockedAnswers((current) => {
-          const next = { ...current, [pendingAnswerId]: data.answer }
+          const answer = profile?.answers.find((item) => item.id === pendingAnswerId)
+          const answerAccessKey = answer
+            ? getAnswerAccessKey(answer)
+            : String(pendingAnswerId)
+          const next = { ...current, [answerAccessKey]: data.answer }
           localStorage.setItem(
             getUnlockedAnswersStorageKey(profileId),
             JSON.stringify(next),
@@ -552,7 +641,7 @@ function PublicProfilePage({ profileId }: { profileId: string }) {
           </div>
         )}
         {profile.answers.map((item, index) => {
-          const unlockedAnswer = unlockedAnswers[item.id]
+          const unlockedAnswer = unlockedAnswers[getAnswerAccessKey(item)]
           const isPending = pendingAnswerId === item.id
 
           return (
@@ -1035,14 +1124,14 @@ function CreatorPage() {
           aria-label="Formulario para crear perfil"
           onSubmit={(event) => event.preventDefault()}
         >
-          <div className="section-heading">
-            <div>
-              <h2>Preguntas</h2>
-              <p>
-                Elige qué quieres responder. Tu perfil incluirá exclusivamente
-                lo que respondas.
-              </p>
-            </div>
+          <div className="questionnaire-instructions">
+            <strong>Cómo responder</strong>
+            <p>
+              Cada tarjeta contiene una palabra y tres campos obligatorios.
+              Completa las personas asociadas con la palabra de cada tarjeta en
+              orden de importancia, desde la más relacionada hasta el tercer
+              lugar.
+            </p>
           </div>
 
           <div className="form-stack">
@@ -1060,6 +1149,8 @@ function CreatorPage() {
                 {question.fields?.length ? (
                   <div className="structured-fields">
                     {question.fields.map((field) => {
+                      const fieldDisplayLabel = field.displayLabel ?? field.label
+
                       if (field.type === 'checkbox-group') {
                         const selectedValues = Array.isArray(
                           question.values[field.key],
@@ -1069,7 +1160,7 @@ function CreatorPage() {
 
                         return (
                           <fieldset className="field-label option-group" key={field.key}>
-                            <legend>{field.label}</legend>
+                            {fieldDisplayLabel && <legend>{fieldDisplayLabel}</legend>}
                             <div className="option-list">
                               {(field.options ?? []).map((option) => (
                                 <label className="option-item" key={option}>
@@ -1101,7 +1192,7 @@ function CreatorPage() {
                       if (field.type === 'textarea') {
                         return (
                           <label className="field-label full-width-field" key={field.key}>
-                            <span>{field.label}</span>
+                            {fieldDisplayLabel && <span>{fieldDisplayLabel}</span>}
                             <textarea
                               rows={4}
                               value={String(question.values[field.key] ?? '')}
@@ -1124,7 +1215,7 @@ function CreatorPage() {
 
                       return (
                         <label className="field-label" key={field.key}>
-                          <span>{field.label}</span>
+                          {fieldDisplayLabel && <span>{fieldDisplayLabel}</span>}
                           <input
                             type={
                               field.type === 'date'

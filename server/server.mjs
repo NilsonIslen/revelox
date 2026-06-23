@@ -91,14 +91,29 @@ const hasUnlockAccess = (intent, token) => {
   )
 }
 
+const getQuestionKey = (question) => question?.key ?? question?.prompt
+
+const isCurrentAnswer = (question, item) => {
+  if (!question) return false
+  if (item?.questionKey !== getQuestionKey(question)) return false
+  if (!question.fields?.length) return true
+
+  return String(item?.answer ?? '').startsWith(`${question.fields[0].label}:`)
+}
+
 const getPublicProfile = (profile) => ({
   id: profile.id,
   createdAt: profile.createdAt,
-  answers: profile.answers.flatMap(({ id, price }) => {
-    const question = getQuestion(id)
+  answers: profile.answers.flatMap((item) => {
+    const question = getQuestion(item.id)
 
-    return question
-      ? [{ id, prompt: question.publicPrompt ?? question.prompt, price }]
+    return isCurrentAnswer(question, item)
+      ? [{
+          id: item.id,
+          questionKey: getQuestionKey(question),
+          prompt: question.publicPrompt ?? question.prompt,
+          price: item.price,
+        }]
       : []
   }),
 })
@@ -106,11 +121,17 @@ const getPublicProfile = (profile) => ({
 const getPrivateProfile = (profile) => ({
   ...getPublicProfile(profile),
   ownerAddress: profile.ownerAddress,
-  answers: profile.answers.flatMap(({ id, answer, price }) => {
-    const question = getQuestion(id)
+  answers: profile.answers.flatMap((item) => {
+    const question = getQuestion(item.id)
 
-    return question
-      ? [{ id, prompt: question.prompt, answer, price }]
+    return isCurrentAnswer(question, item)
+      ? [{
+          id: item.id,
+          questionKey: getQuestionKey(question),
+          prompt: question.prompt,
+          answer: item.answer,
+          price: item.price,
+        }]
       : []
   }),
 })
@@ -166,6 +187,7 @@ const getAnswersFromBody = (body) =>
 
           return {
             id: question?.id,
+            questionKey: getQuestionKey(question),
             answer: question ? normalizeQuestionAnswer(question, item) : '',
             price,
           }
@@ -535,7 +557,12 @@ const server = createServer(async (request, response) => {
           return
         }
 
-        answer = { id: questionId, answer: answerText, price }
+        answer = {
+          id: questionId,
+          questionKey: getQuestionKey(question),
+          answer: answerText,
+          price,
+        }
       }
 
       const profile = await mutateStore((current) => {
@@ -629,8 +656,11 @@ const server = createServer(async (request, response) => {
   if (request.method === 'POST' && unlockStartMatch) {
     const store = await readStore()
     const profile = store.profiles.find((item) => item.id === unlockStartMatch[1])
+    const question = getQuestion(Number(unlockStartMatch[2]))
     const answer = profile?.answers.find(
-      (item) => item.id === Number(unlockStartMatch[2]),
+      (item) =>
+        item.id === Number(unlockStartMatch[2]) &&
+        isCurrentAnswer(question, item),
     )
 
     if (!profile || !answer) {
@@ -664,8 +694,11 @@ const server = createServer(async (request, response) => {
       const unlockToken = String(body.unlockToken ?? '').trim()
       const store = await readStore()
       const profile = store.profiles.find((item) => item.id === unlockMatch[1])
+      const question = getQuestion(Number(unlockMatch[2]))
       const answer = profile?.answers.find(
-        (item) => item.id === Number(unlockMatch[2]),
+        (item) =>
+          item.id === Number(unlockMatch[2]) &&
+          isCurrentAnswer(question, item),
       )
 
       if (!profile || !answer) {
@@ -689,7 +722,10 @@ const server = createServer(async (request, response) => {
         return
       }
 
-      if (completedIntent?.paymentHash && completedIntent.answerSnapshot) {
+      if (
+        completedIntent?.paymentHash &&
+        completedIntent.answerQuestionKey === getQuestionKey(question)
+      ) {
         sendJson(response, 200, {
           answer: completedIntent.answerSnapshot,
           paymentHash: completedIntent.paymentHash,
@@ -755,6 +791,7 @@ const server = createServer(async (request, response) => {
           currentIntent.paymentHash = payment.hash
           currentIntent.payerAddress = payment.senderWallet
           currentIntent.answerSnapshot = answer.answer
+          currentIntent.answerQuestionKey = getQuestionKey(question)
         }
       })
 
