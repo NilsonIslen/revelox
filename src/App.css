@@ -208,24 +208,6 @@ h2 {
   box-shadow: 0 24px 70px rgba(42, 54, 58, 0.1);
 }
 
-.question-title-category,
-.question-title-word {
-  display: inline;
-  padding: 1px 5px;
-  border-radius: 5px;
-  font-weight: 900;
-}
-
-.question-title-category {
-  color: #7b2438;
-  background: #ffe4eb;
-}
-
-.question-title-word {
-  color: #205b61;
-  background: #dff5f3;
-}
-
 .login-card {
   display: grid;
   gap: 14px;

@@ -23,27 +23,29 @@ npm run lint
 - El login abre la wallet y detecta automaticamente la cuenta que paga.
 - El backend valida el pago confirmado antes de iniciar la sesion.
 - Cada wallet tiene un unico perfil y un enlace fijo derivado de su direccion.
-- Revelox controla un catalogo plano y permanente de preguntas.
-- El creador responde solo las preguntas que desea publicar y define su precio.
+- Revelox controla un catalogo plano y permanente de tarjetas predefinidas.
+- El creador completa solo las tarjetas que desea publicar y define su precio.
 - Puede editar, agregar o eliminar sus respuestas sin cambiar el enlace.
 - El enlace aparece al iniciar sesion y no cambia al editar las respuestas.
 - El perfil publico oculta las respuestas y solicita el pago a la wallet del dueño.
 - El backend valida remitente, receptor e importe antes de revelar una respuesta.
 - Cada hash de pago solo puede utilizarse una vez.
 
-## Cuestionario V1
+## Catálogo inicial
 
-El cuestionario actual es plano, no secuencial, y cada pregunta funciona como
-un formulario independiente con precio propio en XNO. El usuario elige que
-preguntas contestar; al guardar una pregunta, debe completar los campos de ese
-formulario.
+El catálogo actual es plano, no secuencial, y cada tarjeta funciona como un
+contenido independiente con precio propio en XNO. El autor elige qué tarjetas
+completar; al guardar una tarjeta, escribe una redacción personal sobre el tema
+predefinido por Revelox.
 
-La version actual genera 50 tarjetas de personas a partir de 50 palabras.
-Cada respuesta es una lista de asociaciones ordenada de mayor a menor.
+La version actual inicia con tarjetas concretas, como `Yo`, `Mi pareja` y
+`Mi hijo`.
+Cada respuesta es una revelación personal que puede contener opiniones,
+historias, recuerdos, experiencias, emociones, reflexiones o confesiones.
 
 Las instrucciones se muestran una sola vez antes del formulario. Cada tarjeta
-muestra solamente una palabra, como `Deseo`, y solicita tres personas mediante
-campos obligatorios ordenados del primer al tercer lugar.
+muestra el tema predefinido y ofrece un campo de redacción personal. Los
+visitantes pueden desbloquear únicamente las tarjetas que les interesen.
 
 La galeria personal se maneja temporalmente como un enlace a un album externo de
 fotografias. El almacenamiento real de imagenes queda pendiente para una fase

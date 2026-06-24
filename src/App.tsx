@@ -26,6 +26,7 @@ type Question = {
   values: Record<string, QuestionValue>
   price: string
   suggestedPrice: string
+  minRequiredFields?: number
   fields?: QuestionField[]
 }
 
@@ -45,6 +46,7 @@ type QuestionDefinition = {
   id: number
   prompt: string
   suggestedPrice: string
+  minRequiredFields?: number
   fields?: QuestionField[]
 }
 
@@ -155,7 +157,7 @@ const getStoredUnlockIntent = (profileId: string) => {
 const initialQuestions: Question[] = [
   {
     id: 1,
-    prompt: 'Deseo',
+    prompt: 'Yo',
     answer: '',
     values: {},
     price: '',
@@ -218,11 +220,12 @@ const parseQuestionValues = (question: Question, answer: string) => {
 
 const isQuestionComplete = (question: Question) =>
   question.fields?.length
-    ? question.fields.every((field) => {
-        if (field.optional) return true
+    ? question.fields.filter((field) => {
         const value = question.values[field.key]
         return Array.isArray(value) ? value.length > 0 : Boolean(value?.trim())
-      })
+      }).length >=
+      (question.minRequiredFields ??
+        question.fields.filter((field) => !field.optional).length)
     : Boolean(question.answer.trim())
 
 const hasQuestionContent = (question: Question) =>
@@ -305,55 +308,12 @@ function QuestionText({
   titleAs?: 'h2' | 'h3'
 }) {
   const content = formatQuestionText(text)
-  const ownerCatalyst = content.title.match(/^(.+?) (que activan tu) (.+)$/i)
-  const publicCatalyst = content.title.match(
-    /^(.+?) (que activan (?:el|la)) (.+?) (del titular)$/i,
-  )
-  const catalyst = ownerCatalyst ?? publicCatalyst
-  const publicHiddenTitle = content.title.match(
-    /^(Personas) (asociadas con) (.+?) (en el titular)$/i,
-  )
-  const compactAssociation = content.title.match(/^(Personas) (.+)$/i)
-  const singleWordTitle = content.title.match(/^\S+$/u)
 
   return (
     <div className="question-text">
       <div className="question-title-row">
         <span className="question-number">{index + 1}</span>
-        <Title className="fixed-question">
-          {singleWordTitle ? (
-            <span className="question-title-word">{content.title}</span>
-          ) : publicHiddenTitle ? (
-            <>
-              <span className="question-title-category">
-                {publicHiddenTitle[1]}
-              </span>{' '}
-              {publicHiddenTitle[2]}{' '}
-              <span className="question-title-word">
-                {publicHiddenTitle[3]}
-              </span>{' '}
-              {publicHiddenTitle[4]}
-            </>
-          ) : compactAssociation ? (
-            <>
-              <span className="question-title-category">
-                {compactAssociation[1]}
-              </span>{' '}
-              <span className="question-title-word">
-                {compactAssociation[2]}
-              </span>
-            </>
-          ) : catalyst ? (
-            <>
-              <span className="question-title-category">{catalyst[1]}</span>{' '}
-              {catalyst[2]}{' '}
-              <span className="question-title-word">{catalyst[3]}</span>
-              {catalyst[4] ? ` ${catalyst[4]}` : ''}
-            </>
-          ) : (
-            content.title
-          )}
-        </Title>
+        <Title className="fixed-question">{content.title}</Title>
       </div>
 
       {content.details.length > 0 && (
@@ -1127,10 +1087,9 @@ function CreatorPage() {
           <div className="questionnaire-instructions">
             <strong>Cómo responder</strong>
             <p>
-              Cada tarjeta contiene una palabra y tres campos obligatorios.
-              Completa las personas asociadas con la palabra de cada tarjeta en
-              orden de importancia, desde la más relacionada hasta el tercer
-              lugar.
+              Cada tarjeta contiene un tema predefinido por Revelox. Elige las
+              tarjetas que quieras completar y escribe una redacción personal con
+              tus opiniones, recuerdos, experiencias, emociones o confesiones.
             </p>
           </div>
 
@@ -1206,7 +1165,7 @@ function CreatorPage() {
                               placeholder={
                                 isLoggedIn ? field.placeholder : 'Bloqueado'
                               }
-                              required
+                              required={!question.minRequiredFields && !field.optional}
                               disabled={!isLoggedIn}
                             />
                           </label>
@@ -1235,7 +1194,7 @@ function CreatorPage() {
                               )
                             }
                             placeholder={isLoggedIn ? field.placeholder : 'Bloqueado'}
-                            required={!field.optional}
+                            required={!question.minRequiredFields && !field.optional}
                             disabled={!isLoggedIn}
                           />
                         </label>

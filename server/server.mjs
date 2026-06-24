@@ -98,7 +98,12 @@ const isCurrentAnswer = (question, item) => {
   if (item?.questionKey !== getQuestionKey(question)) return false
   if (!question.fields?.length) return true
 
-  return String(item?.answer ?? '').startsWith(`${question.fields[0].label}:`)
+  const answerText = String(item?.answer ?? '')
+
+  return question.fields.some((field) =>
+    answerText.startsWith(`${field.label}:`) ||
+    answerText.includes(`\n${field.label}:`),
+  )
 }
 
 const getPublicProfile = (profile) => ({
@@ -111,7 +116,7 @@ const getPublicProfile = (profile) => ({
       ? [{
           id: item.id,
           questionKey: getQuestionKey(question),
-          prompt: question.publicPrompt ?? question.prompt,
+          prompt: question.prompt,
           price: item.price,
         }]
       : []
@@ -157,19 +162,21 @@ const normalizeQuestionAnswer = (question, body) => {
     return { ...field, value }
   })
 
-  if (
-    normalizedFields.some((field) =>
-      field.optional
-        ? false
-        : Array.isArray(field.value)
-          ? field.value.length === 0
-          : !field.value,
+  const hasValue = (field) =>
+    Array.isArray(field.value) ? field.value.length > 0 : Boolean(field.value)
+  const filledFields = normalizedFields.filter(hasValue)
+  const requiredFields = normalizedFields.filter((field) => !field.optional).length
+  const minRequiredFields = question.minRequiredFields ?? requiredFields
+
+  if (filledFields.length < minRequiredFields) {
+    throw new Error(
+      minRequiredFields === 1
+        ? 'Completa al menos un campo de esta tarjeta para guardarla'
+        : 'Completa los campos requeridos de esta tarjeta para guardarla',
     )
-  ) {
-    throw new Error('Completa todos los campos de esta pregunta para guardarla')
   }
 
-  return normalizedFields
+  return filledFields
     .map((field) =>
       `${field.label}: ${
         Array.isArray(field.value) ? field.value.join(', ') : field.value
