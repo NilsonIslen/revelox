@@ -30,6 +30,9 @@ const LEGACY_PROFILE_ID_STORAGE_KEY = 'revelox-profile-id'
 const COOKIE_SESSION = 'cookie-session'
 const xnoCreatorStoreUrl =
   import.meta.env.VITE_XNO_CREATOR_STORE_URL?.trim() || 'https://nanopaquete.com'
+const nanoNodeMonitorUrl =
+  import.meta.env.VITE_NANO_NODE_MONITOR_URL?.trim() ||
+  'http://monitor.167.71.17.126.nip.io'
 
 type Question = {
   id: number
@@ -753,6 +756,9 @@ function TopMenu({
         </a>
         <a href="https://hub.nano.org/trading" target="_blank" rel="noreferrer">
           Comprar o vender XNO en otro comercio
+        </a>
+        <a href={nanoNodeMonitorUrl} target="_blank" rel="noreferrer">
+          Nodo Nano
         </a>
         <a href={getGuideHref()}>Guía</a>
         <a href="/soporte">Soporte</a>
@@ -2146,6 +2152,9 @@ function CreatorPage() {
               </a>
               <a href="https://hub.nano.org/trading" target="_blank" rel="noreferrer">
                 Comprar o vender XNO en otro comercio
+              </a>
+              <a href={nanoNodeMonitorUrl} target="_blank" rel="noreferrer">
+                Nodo Nano
               </a>
             </div>
           )}
